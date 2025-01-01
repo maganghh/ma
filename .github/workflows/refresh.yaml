@@ -2,7 +2,7 @@ name: Refresh
 on:
   # 每四小时执行一次
   schedule:
-    - cron: "0 */12 * * *"
+    - cron: "0 */4 * * *"
   workflow_dispatch:
 
 concurrency:
