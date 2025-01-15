@@ -60,7 +60,7 @@ jobs:
           fi
 
       - name: Refresh Data
-        run: python -u subscribe/collect.py -a -r -o -s
+        run: python -u subscribe/collect.py -r -o -s
 
       - name: Add Timestamp
         run: date
