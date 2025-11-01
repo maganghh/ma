@@ -9,9 +9,6 @@ env:
   # time zone
   TZ: Asia/Shanghai
 
-  # network proxy aggregate config
-  SUBSCRIBE_CONF: ${{ secrets.SUBSCRIBE_CONF }}
-
   # token
   PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
 
