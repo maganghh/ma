@@ -1563,45 +1563,27 @@ def collect_airport(
         return result
 
     def crawl_jctj(convert: bool = False) -> dict:
-        urls = [
-            "https://raw.githubusercontent.com/hwanz/SSR-V2ray-Trojan-vpn/main/README.md",
-            "https://raw.githubusercontent.com/hwanz/SSR-V2ray-Trojan/main/README.md"
-        ]
-
-        all_tasks = []
+        url = "https://raw.githubusercontent.com/hwanz/SSR-V2ray-Trojan-vpn/main/README.md"
+        content = utils.http_get(url=url)
+        groups = re.findall(r"\[.*\]\((https?:\/\/[^\s\r\n]+)\)[^\r\n]+\d+G.*", content, flags=re.I)
+        if not groups:
+            return {}
 
         try:
-            for url in urls:
-                try:
-                    content = utils.http_get(url=url)
-                    groups = re.findall(r"\[[^\]]+\]\((https?://[^)\s]+)\)", content, flags=re.I)
-                
-                    if groups:
-                        current_tasks = [utils.trim(x).lower() for x in groups if x]
-                        all_tasks.extend(current_tasks)
-                except Exception as e:
-                    logger.warning(f"[AirPortCollector] Failed to fetch content from [{url}]: {e}")
-                    continue
-
-            if not all_tasks:
-                return {}
-
-            all_tasks = list(set(all_tasks))
-
+            tasks = [utils.trim(x).lower() for x in groups if x]
             if convert:
-                links = utils.multi_thread_run(func=get_redirect_url, tasks=all_tasks, num_threads=num_thread)
+                links = utils.multi_thread_run(func=get_redirect_url, tasks=tasks, num_threads=num_thread)
             else:
-                links = all_tasks
-            
+                links = tasks
+
             result = {utils.extract_domain(url=x, include_protocal=True): "" for x in links if x}
-        
-            logger.info(f"[AirPortCollector] finished crawl from {len(urls)} sources, found {len(result)} domains")
+            logger.info(f"[AirPortCollector] finished crawl from [{url}], found {len(result)} domains")
 
             return result
         except:
-            logger.error(f"[AirPortCollector] occur error when crawl jctj, message: \n{traceback.format_exc()}")
+            logger.error(f"[AirPortCollector] occur error when crawl from [{url}], message: \n{traceback.format_exc()}")
             return {}
-        
+
     def get_redirect_url(url: str, retry: int = 3) -> str:
         if not url or retry <= 0:
             return ""
